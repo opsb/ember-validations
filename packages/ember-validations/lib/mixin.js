@@ -35,7 +35,7 @@ var ArrayValidatorProxy = Ember.ArrayProxy.extend(setValidityMixin, {
 Ember.Validations.Mixin = Ember.Mixin.create(setValidityMixin, {
   init: function() {
     this._super();
-    this.errors = Ember.Validations.Errors.create();
+    this.clientErrors = Ember.Validations.clientErrors.create();
     this._dependentValidationKeys = {};
     this.validators = Ember.makeArray();
     if (this.get('validations') === undefined) {
@@ -43,14 +43,14 @@ Ember.Validations.Mixin = Ember.Mixin.create(setValidityMixin, {
     }
     this.buildValidators();
     this.validators.forEach(function(validator) {
-      validator.addObserver('errors.[]', this, function(sender, key, value, context, rev) {
-        var errors = Ember.makeArray();
+      validator.addObserver('clientErrors.[]', this, function(sender, key, value, context, rev) {
+        var clientErrors = Ember.makeArray();
         this.validators.forEach(function(validator) {
           if (validator.property === sender.property) {
-            errors = errors.concat(validator.errors);
+            clientErrors = clientErrors.concat(validator.clientErrors);
           }
         }, this);
-        this.set('errors.' + sender.property, errors);
+        this.set('clientErrors.' + sender.property, clientErrors);
       });
     }, this);
   },
@@ -83,11 +83,11 @@ Ember.Validations.Mixin = Ember.Mixin.create(setValidityMixin, {
   validate: function() {
     var self = this;
     return this._validate().then(function(vals) {
-      var errors = self.get('errors');
+      var clientErrors = self.get('clientErrors');
       if (vals.contains(false)) {
-        return Ember.RSVP.reject(errors);
+        return Ember.RSVP.reject(clientErrors);
       }
-      return errors;
+      return clientErrors;
     });
   },
   _validate: function() {

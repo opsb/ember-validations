@@ -264,11 +264,11 @@ user.validate().then(function() {
 })
 ```
 
-## Inspecting Errors ##
+## Inspecting clientErrors ##
 
 After mixing in `Ember.Validations.Mixin` into your object it will now have a
-`.errors` object. All validation error messages will be placed in there
-for the corresponding property. Errors messages will always be an array.
+`.clientErrors` object. All validation error messages will be placed in there
+for the corresponding property. clientErrors messages will always be an array.
 
 ```javascript
 App.User = Ember.Object.extend(Ember.Validations.Mixin, {
@@ -280,11 +280,11 @@ App.User = Ember.Object.extend(Ember.Validations.Mixin, {
 user = App.User.create();
 user.validate().then(null, function() {
   user.get('isValid'); // false
-  user.get('errors.firstName'); // ["can't be blank"]
+  user.get('clientErrors.firstName'); // ["can't be blank"]
   user.set('firstName', 'Brian');
   user.validate().then(function() {
     user.get('isValid'); // true
-    user.get('errors.firstName'); // []
+    user.get('clientErrors.firstName'); // []
   })
 })
 

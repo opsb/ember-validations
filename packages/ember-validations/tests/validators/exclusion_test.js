@@ -21,7 +21,7 @@ test('when value is not in the list', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 4);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is in the list', function() {
@@ -30,7 +30,7 @@ test('when value is in the list', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowing blank', function() {
@@ -38,7 +38,7 @@ test('when allowing blank', function() {
   Ember.run(function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when not allowing blank', function() {
@@ -47,7 +47,7 @@ test('when not allowing blank', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when value is not in the range', function() {
@@ -56,7 +56,7 @@ test('when value is not in the range', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 4);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is in the range', function() {
@@ -65,7 +65,7 @@ test('when value is in the range', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is an array', function() {
@@ -74,7 +74,7 @@ test('when options is an array', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is reserved']);
+  deepEqual(validator.clientErrors, ['is reserved']);
 });
 
 test('when no message is passed', function() {
@@ -83,5 +83,5 @@ test('when no message is passed', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is reserved']);
+  deepEqual(validator.clientErrors, ['is reserved']);
 });

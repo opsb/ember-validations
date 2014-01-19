@@ -40,7 +40,7 @@ test('inactive validators should be considered valid', function() {
         return canValidate;
       },
       call: function() {
-        this.errors.pushObject("nope");
+        this.clientErrors.pushObject("nope");
       }
     });
   });

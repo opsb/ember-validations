@@ -21,7 +21,7 @@ test('when attribute is true', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', true);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when attribute is not true', function() {
@@ -30,7 +30,7 @@ test('when attribute is not true', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', false);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when attribute is value of 1', function() {
@@ -39,7 +39,7 @@ test('when attribute is value of 1', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when attribute value is 2 and accept value is 2', function() {
@@ -48,7 +48,7 @@ test('when attribute value is 2 and accept value is 2', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 2);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when attribute value is 1 and accept value is 2', function() {
@@ -57,7 +57,7 @@ test('when attribute value is 1 and accept value is 2', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is true', function() {
@@ -66,7 +66,7 @@ test('when options is true', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', false);
   });
-  deepEqual(validator.errors, ['must be accepted']);
+  deepEqual(validator.clientErrors, ['must be accepted']);
 });
 
 test('when no message is passed', function() {
@@ -75,5 +75,5 @@ test('when no message is passed', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', false);
   });
-  deepEqual(validator.errors, ['must be accepted']);
+  deepEqual(validator.clientErrors, ['must be accepted']);
 });

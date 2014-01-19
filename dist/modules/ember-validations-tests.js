@@ -24,7 +24,7 @@ asyncTest('if with function', function() {
   Ember.run(function(){
     user = User.create();
     user.validate().then(function(){
-      deepEqual(user.errors.get('firstName'), []);
+      deepEqual(user.clientErrors.get('firstName'), []);
       var validator = user.validators.get('firstObject');
       validator.conditionals['if'] = function(model, property) {
         equal(user, model, "the conditional validator is passed the model being validated");
@@ -32,7 +32,7 @@ asyncTest('if with function', function() {
         return true;
       };
       user.validate().then(null, function(){
-        deepEqual(user.errors.get('firstName'), ["can't be blank"]);
+        deepEqual(user.clientErrors.get('firstName'), ["can't be blank"]);
         start();
       });
     });
@@ -55,10 +55,10 @@ asyncTest('if with property reference', function() {
     user = User.create();
     user.set('canValidate', false);
     user.validate().then(function(){
-      deepEqual(user.errors.get('firstName'), []);
+      deepEqual(user.clientErrors.get('firstName'), []);
       user.set('canValidate', true);
       user.validate().then(null, function(){
-        deepEqual(user.errors.get('firstName'), ["can't be blank"]);
+        deepEqual(user.clientErrors.get('firstName'), ["can't be blank"]);
         start();
       });
     });
@@ -82,13 +82,13 @@ asyncTest('if with function reference', function() {
   Ember.run(function(){
     user = User.create();
     user.validate().then(function(){
-      deepEqual(user.errors.get('firstName'), []);
+      deepEqual(user.clientErrors.get('firstName'), []);
       user.set('canValidate', true);
       user.canValidate = function() {
         return true;
       };
       user.validate().then(null, function(){
-        deepEqual(user.errors.get('firstName'), ["can't be blank"]);
+        deepEqual(user.clientErrors.get('firstName'), ["can't be blank"]);
         start();
       });
     });
@@ -112,7 +112,7 @@ asyncTest('unless with function', function() {
   Ember.run(function(){
     user = User.create();
     user.validate().then(function(){
-      deepEqual(user.errors.get('firstName'), []);
+      deepEqual(user.clientErrors.get('firstName'), []);
       var validator = user.validators.get('firstObject');
       validator.conditionals['unless'] = function(model, property) {
         equal(user, model, "the conditional validator is passed the model being validated");
@@ -120,7 +120,7 @@ asyncTest('unless with function', function() {
         return false;
       };
       user.validate().then(null, function(){
-        deepEqual(user.errors.get('firstName'), ["can't be blank"]);
+        deepEqual(user.clientErrors.get('firstName'), ["can't be blank"]);
         start();
       });
     });
@@ -142,10 +142,10 @@ asyncTest('unless with property reference', function() {
   Ember.run(function(){
     user = User.create();
     user.validate().then(function(){
-      deepEqual(user.errors.get('firstName'), []);
+      deepEqual(user.clientErrors.get('firstName'), []);
       user.set('canValidate', false);
       user.validate().then(null, function(){
-        deepEqual(user.errors.get('firstName'), ["can't be blank"]);
+        deepEqual(user.clientErrors.get('firstName'), ["can't be blank"]);
         start();
       });
     });
@@ -169,13 +169,13 @@ asyncTest('unless with function reference', function() {
   Ember.run(function(){
     user = User.create();
     user.validate().then(function(){
-      deepEqual(user.errors.get('firstName'), []);
+      deepEqual(user.clientErrors.get('firstName'), []);
       user.set('canValidate', true);
       user.canValidate = function() {
         return false;
       };
       user.validate().then(null, function(){
-        deepEqual(user.errors.get('firstName'), ["can't be blank"]);
+        deepEqual(user.clientErrors.get('firstName'), ["can't be blank"]);
         start();
       });
     });
@@ -187,7 +187,7 @@ asyncTest('unless with function reference', function() {
 (function() {
 var user, User;
 
-module('Errors test', {
+module('clientErrors test', {
   setup: function() {
     User = Ember.Object.extend(Ember.Validations.Mixin, {
       validations: {
@@ -208,41 +208,41 @@ test('validations are run on instantiation', function() {
     user = User.create();
   });
   equal(user.get('isValid'), false);
-  deepEqual(user.get('errors.name'), ["can't be blank"]);
-  deepEqual(user.get('errors.age'), ["can't be blank", 'is not a number']);
+  deepEqual(user.get('clientErrors.name'), ["can't be blank"]);
+  deepEqual(user.get('clientErrors.age'), ["can't be blank", 'is not a number']);
   Ember.run(function() {
     user = User.create({name: 'Brian', age: 33});
   });
   ok(user.get('isValid'));
-  deepEqual(user.get('errors.name'), []);
-  deepEqual(user.get('errors.age'), []);
+  deepEqual(user.get('clientErrors.name'), []);
+  deepEqual(user.get('clientErrors.age'), []);
 });
 
-test('when errors are resolved', function() {
+test('when clientErrors are resolved', function() {
   Ember.run(function() {
     user = User.create();
   });
   equal(user.get('isValid'), false);
-  deepEqual(user.get('errors.name'), ["can't be blank"]);
-  deepEqual(user.get('errors.age'), ["can't be blank", 'is not a number']);
+  deepEqual(user.get('clientErrors.name'), ["can't be blank"]);
+  deepEqual(user.get('clientErrors.age'), ["can't be blank", 'is not a number']);
   Ember.run(function() {
     user.set('name', 'Brian');
   });
   equal(user.get('isValid'), false);
-  deepEqual(user.get('errors.name'), []);
-  deepEqual(user.get('errors.age'), ["can't be blank", 'is not a number']);
+  deepEqual(user.get('clientErrors.name'), []);
+  deepEqual(user.get('clientErrors.age'), ["can't be blank", 'is not a number']);
   Ember.run(function() {
     user.set('age', 'thirty three');
   });
   equal(user.get('isValid'), false);
-  deepEqual(user.get('errors.name'), []);
-  deepEqual(user.get('errors.age'), ['is not a number']);
+  deepEqual(user.get('clientErrors.name'), []);
+  deepEqual(user.get('clientErrors.age'), ['is not a number']);
   Ember.run(function() {
     user.set('age', 33);
   });
   ok(user.get('isValid'));
-  deepEqual(user.get('errors.name'), []);
-  deepEqual(user.get('errors.age'), []);
+  deepEqual(user.get('clientErrors.name'), []);
+  deepEqual(user.get('clientErrors.age'), []);
 });
 
 })();
@@ -290,19 +290,19 @@ test('isInvalid tracks isValid', function() {
 
 asyncTest('runs all validations', function() {
   Ember.run(function(){
-    user.validate().then(null, function(errors){
-      deepEqual(errors.get('firstName'), ["can't be blank", 'is the wrong length (should be 5 characters)']);
-      deepEqual(errors.get('lastName'), ["is invalid"]);
+    user.validate().then(null, function(clientErrors){
+      deepEqual(clientErrors.get('firstName'), ["can't be blank", 'is the wrong length (should be 5 characters)']);
+      deepEqual(clientErrors.get('lastName'), ["is invalid"]);
       equal(user.get('isValid'), false);
       user.set('firstName', 'Bob');
-      user.validate('firstName').then(null, function(errors){
-        deepEqual(errors.get('firstName'), ['is the wrong length (should be 5 characters)']);
+      user.validate('firstName').then(null, function(clientErrors){
+        deepEqual(clientErrors.get('firstName'), ['is the wrong length (should be 5 characters)']);
         equal(user.get('isValid'), false);
         user.set('firstName', 'Brian');
         user.set('lastName', 'Cardarella');
-        user.validate().then(function(errors){
-          deepEqual(errors.get('firstName'), []);
-          deepEqual(errors.get('lastName'), []);
+        user.validate().then(function(clientErrors){
+          deepEqual(clientErrors.get('firstName'), []);
+          deepEqual(clientErrors.get('lastName'), []);
           equal(user.get('isValid'), true);
           start();
         });
@@ -583,11 +583,11 @@ test('when value is not empty', function() {
   Ember.run(function(){
     validator = Ember.Validations.validators.local.Absence.create({model: model, property: 'attribute', options: options});
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
   Ember.run(function() {
     model.set('attribute', 'not empty');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when value is made empty', function() {
@@ -597,7 +597,7 @@ test('when value is made empty', function() {
     validator = Ember.Validations.validators.local.Absence.create({model: model, property: 'attribute', options: options});
     model.set('attribute', undefined);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when options is true', function() {
@@ -606,7 +606,7 @@ test('when options is true', function() {
     validator = Ember.Validations.validators.local.Absence.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'not empty');
   });
-  deepEqual(validator.errors, ["must be blank"]);
+  deepEqual(validator.clientErrors, ["must be blank"]);
 });
 
 })();
@@ -635,7 +635,7 @@ test('when attribute is true', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', true);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when attribute is not true', function() {
@@ -644,7 +644,7 @@ test('when attribute is not true', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', false);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when attribute is value of 1', function() {
@@ -653,7 +653,7 @@ test('when attribute is value of 1', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when attribute value is 2 and accept value is 2', function() {
@@ -662,7 +662,7 @@ test('when attribute value is 2 and accept value is 2', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 2);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when attribute value is 1 and accept value is 2', function() {
@@ -671,7 +671,7 @@ test('when attribute value is 1 and accept value is 2', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is true', function() {
@@ -680,7 +680,7 @@ test('when options is true', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', false);
   });
-  deepEqual(validator.errors, ['must be accepted']);
+  deepEqual(validator.clientErrors, ['must be accepted']);
 });
 
 test('when no message is passed', function() {
@@ -689,7 +689,7 @@ test('when no message is passed', function() {
     validator = Ember.Validations.validators.local.Acceptance.create({model: model, property: 'attribute', options: options});
     model.set('attribute', false);
   });
-  deepEqual(validator.errors, ['must be accepted']);
+  deepEqual(validator.clientErrors, ['must be accepted']);
 });
 
 })();
@@ -737,7 +737,7 @@ test('inactive validators should be considered valid', function() {
         return canValidate;
       },
       call: function() {
-        this.errors.pushObject("nope");
+        this.clientErrors.pushObject("nope");
       }
     });
   });
@@ -776,15 +776,15 @@ test('when values match', function() {
     model.set('attribute', 'test');
     model.set('attributeConfirmation', 'test');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
   Ember.run(function() {
     model.set('attributeConfirmation', 'newTest');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
   Ember.run(function() {
     model.set('attribute', 'newTest');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when values do not match', function() {
@@ -793,7 +793,7 @@ test('when values do not match', function() {
     validator = Ember.Validations.validators.local.Confirmation.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'test');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is true', function() {
@@ -802,7 +802,7 @@ test('when options is true', function() {
     validator = Ember.Validations.validators.local.Confirmation.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'test');
   });
-  deepEqual(validator.errors, ["doesn't match attribute"]);
+  deepEqual(validator.clientErrors, ["doesn't match attribute"]);
 });
 
 test('message integration on model, prints message on Confirmation property', function() {
@@ -819,8 +819,8 @@ test('message integration on model, prints message on Confirmation property', fu
     otherModel.set('attribute', 'test');
   });
 
-  deepEqual(otherModel.get('errors.attributeConfirmation'), ["doesn't match attribute"]);
-  deepEqual(otherModel.get('errors.attribute'), []);
+  deepEqual(otherModel.get('clientErrors.attributeConfirmation'), ["doesn't match attribute"]);
+  deepEqual(otherModel.get('clientErrors.attribute'), []);
 });
 
 })();
@@ -849,7 +849,7 @@ test('when value is not in the list', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 4);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is in the list', function() {
@@ -858,7 +858,7 @@ test('when value is in the list', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowing blank', function() {
@@ -866,7 +866,7 @@ test('when allowing blank', function() {
   Ember.run(function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when not allowing blank', function() {
@@ -875,7 +875,7 @@ test('when not allowing blank', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when value is not in the range', function() {
@@ -884,7 +884,7 @@ test('when value is not in the range', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 4);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is in the range', function() {
@@ -893,7 +893,7 @@ test('when value is in the range', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is an array', function() {
@@ -902,7 +902,7 @@ test('when options is an array', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is reserved']);
+  deepEqual(validator.clientErrors, ['is reserved']);
 });
 
 test('when no message is passed', function() {
@@ -911,7 +911,7 @@ test('when no message is passed', function() {
     validator = Ember.Validations.validators.local.Exclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is reserved']);
+  deepEqual(validator.clientErrors, ['is reserved']);
 });
 
 })();
@@ -940,7 +940,7 @@ test('when matching format', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute',  '123');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when not matching format', function() {
@@ -949,7 +949,7 @@ test('when not matching format', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'abc');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowing blank', function() {
@@ -958,7 +958,7 @@ test('when allowing blank', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when not allowing blank', function() {
@@ -967,7 +967,7 @@ test('when not allowing blank', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is regexp', function() {
@@ -976,7 +976,7 @@ test('when options is regexp', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is invalid']);
+  deepEqual(validator.clientErrors, ['is invalid']);
 });
 
 test('when no message is passed', function() {
@@ -985,7 +985,7 @@ test('when no message is passed', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is invalid']);
+  deepEqual(validator.clientErrors, ['is invalid']);
 });
 
 })();
@@ -1014,7 +1014,7 @@ test('when value is in the list', function() {
     validator = Ember.Validations.validators.local.Inclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is not in the list', function() {
@@ -1023,7 +1023,7 @@ test('when value is not in the list', function() {
     validator = Ember.Validations.validators.local.Inclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 4);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowing blank', function() {
@@ -1032,7 +1032,7 @@ test('when allowing blank', function() {
     validator = Ember.Validations.validators.local.Inclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when not allowing blank', function() {
@@ -1041,7 +1041,7 @@ test('when not allowing blank', function() {
     validator = Ember.Validations.validators.local.Inclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when value is in the range', function() {
@@ -1050,7 +1050,7 @@ test('when value is in the range', function() {
     validator = Ember.Validations.validators.local.Inclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is not in the range', function() {
@@ -1059,7 +1059,7 @@ test('when value is not in the range', function() {
     validator = Ember.Validations.validators.local.Inclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 4);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is array', function() {
@@ -1068,7 +1068,7 @@ test('when options is array', function() {
     validator = Ember.Validations.validators.local.Inclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is not included in the list']);
+  deepEqual(validator.clientErrors, ['is not included in the list']);
 });
 
 test('when no message is passed', function() {
@@ -1077,7 +1077,7 @@ test('when no message is passed', function() {
     validator = Ember.Validations.validators.local.Inclusion.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is not included in the list']);
+  deepEqual(validator.clientErrors, ['is not included in the list']);
 });
 
 })();
@@ -1106,7 +1106,7 @@ test('when allowed length is 3 and value length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '123');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowed length is 3 and value length is 4', function() {
@@ -1115,7 +1115,7 @@ test('when allowed length is 3 and value length is 4', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '1234');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowed length is 3 and value length is 2', function() {
@@ -1124,7 +1124,7 @@ test('when allowed length is 3 and value length is 2', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '12');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowing blank and allowed length is 3', function() {
@@ -1133,7 +1133,7 @@ test('when allowing blank and allowed length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowing blank and minimum length is 3 and maximum length is 100', function() {
@@ -1142,7 +1142,7 @@ test('when allowing blank and minimum length is 3 and maximum length is 100', fu
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when not allowing blank and allowed length is 3', function() {
@@ -1151,7 +1151,7 @@ test('when not allowing blank and allowed length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowed length is 3 and a differnet tokenizer', function() {
@@ -1160,7 +1160,7 @@ test('when allowed length is 3 and a differnet tokenizer', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'one two three');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowed length minimum is 3 and value length is 3', function() {
@@ -1169,7 +1169,7 @@ test('when allowed length minimum is 3 and value length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '123');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowed length minimum is 3 and value length is 2', function() {
@@ -1178,7 +1178,7 @@ test('when allowed length minimum is 3 and value length is 2', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '12');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowed length maximum is 3 and value length is 3', function() {
@@ -1187,7 +1187,7 @@ test('when allowed length maximum is 3 and value length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '123');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowed length maximum is 3 and value length is 4', function() {
@@ -1196,7 +1196,7 @@ test('when allowed length maximum is 3 and value length is 4', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '1234');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowed length maximum is 3 and value is blank', function() {
@@ -1205,7 +1205,7 @@ test('when allowed length maximum is 3 and value is blank', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when options is a number', function() {
@@ -1215,7 +1215,7 @@ test('when options is a number', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 3 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 3 characters)']);
 });
 
 test('when options is a number and value is undefined', function() {
@@ -1224,7 +1224,7 @@ test('when options is a number and value is undefined', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 3 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 3 characters)']);
 });
 
 test('when allowed length is 3, value length is 4 and no message is set', function() {
@@ -1233,7 +1233,7 @@ test('when allowed length is 3, value length is 4 and no message is set', functi
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '1234');
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 3 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 3 characters)']);
 });
 
 test('when allowed length minimum is 3, value length is 2 and no message is set', function() {
@@ -1242,7 +1242,7 @@ test('when allowed length minimum is 3, value length is 2 and no message is set'
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '12');
   });
-  deepEqual(validator.errors, ['is too short (minimum is 3 characters)']);
+  deepEqual(validator.clientErrors, ['is too short (minimum is 3 characters)']);
 });
 
 test('when allowed length maximum is 3, value length is 4 and no message is set', function() {
@@ -1251,7 +1251,7 @@ test('when allowed length maximum is 3, value length is 4 and no message is set'
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '1234');
   });
-  deepEqual(validator.errors, ['is too long (maximum is 3 characters)']);
+  deepEqual(validator.clientErrors, ['is too long (maximum is 3 characters)']);
 });
 
 test('when using a property instead of a number', function() {
@@ -1260,15 +1260,15 @@ test('when using a property instead of a number', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '123');
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 0 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 0 characters)']);
   Ember.run(function() {
     model.set('countProperty', 3);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
   Ember.run(function() {
     model.set('countProperty', 5);
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 5 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 5 characters)']);
 });
 
 })();
@@ -1297,7 +1297,7 @@ test('when value is a number', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 123);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is a decimal number', function() {
@@ -1306,7 +1306,7 @@ test('when value is a decimal number', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 123.456);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is not a number', function() {
@@ -1315,7 +1315,7 @@ test('when value is not a number', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'abc123');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when no value', function() {
@@ -1324,7 +1324,7 @@ test('when no value', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when no value and allowing blank', function() {
@@ -1333,7 +1333,7 @@ test('when no value and allowing blank', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when bad value and allowing blank', function() {
@@ -1342,7 +1342,7 @@ test('when bad value and allowing blank', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'abc123');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when only allowing integers and value is integer', function() {
@@ -1351,7 +1351,7 @@ test('when only allowing integers and value is integer', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 123);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when only allowing integers and value is not integer', function() {
@@ -1360,7 +1360,7 @@ test('when only allowing integers and value is not integer', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 123.456);
   });
-  deepEqual(validator.errors, ['failed integer validation']);
+  deepEqual(validator.clientErrors, ['failed integer validation']);
 });
 
 test('when only integer and no message is passed', function() {
@@ -1369,7 +1369,7 @@ test('when only integer and no message is passed', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1.1);
   });
-  deepEqual(validator.errors, ['must be an integer']);
+  deepEqual(validator.clientErrors, ['must be an integer']);
 });
 
 test('when only integer is passed directly', function() {
@@ -1378,7 +1378,7 @@ test('when only integer is passed directly', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1.1);
   });
-  deepEqual(validator.errors, ['must be an integer']);
+  deepEqual(validator.clientErrors, ['must be an integer']);
 });
 
 test('when only allowing values greater than 10 and value is greater than 10', function() {
@@ -1387,7 +1387,7 @@ test('when only allowing values greater than 10 and value is greater than 10', f
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 11);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when only allowing values greater than 10 and value is 10', function() {
@@ -1396,7 +1396,7 @@ test('when only allowing values greater than 10 and value is 10', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when only allowing values greater than or deepEqual to 10 and value is 10', function() {
@@ -1405,7 +1405,7 @@ test('when only allowing values greater than or deepEqual to 10 and value is 10'
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when only allowing values greater than or deepEqual to 10 and value is 9', function() {
@@ -1414,7 +1414,7 @@ test('when only allowing values greater than or deepEqual to 10 and value is 9',
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 9);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when only allowing values less than 10 and value is less than 10', function() {
@@ -1423,7 +1423,7 @@ test('when only allowing values less than 10 and value is less than 10', functio
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 9);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when only allowing values less than 10 and value is 10', function() {
@@ -1432,7 +1432,7 @@ test('when only allowing values less than 10 and value is 10', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when only allowing values less than or deepEqual to 10 and value is 10', function() {
@@ -1441,7 +1441,7 @@ test('when only allowing values less than or deepEqual to 10 and value is 10', f
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when only allowing values less than or deepEqual to 10 and value is 11', function() {
@@ -1449,7 +1449,7 @@ test('when only allowing values less than or deepEqual to 10 and value is 11', f
   Ember.run(function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 11);
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
   });
 });
 
@@ -1459,7 +1459,7 @@ test('when only allowing values equal to 10 and value is 10', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when only allowing values equal to 10 and value is 11', function() {
@@ -1468,7 +1468,7 @@ test('when only allowing values equal to 10 and value is 11', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 11);
   });
-  deepEqual(validator.errors, ['failed equal validation']);
+  deepEqual(validator.clientErrors, ['failed equal validation']);
 });
 
 test('when only allowing value equal to 0 and value is 1', function() {
@@ -1477,7 +1477,7 @@ test('when only allowing value equal to 0 and value is 1', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 1);
   });
-  deepEqual(validator.errors, ['failed equal validation']);
+  deepEqual(validator.clientErrors, ['failed equal validation']);
 });
 
 test('when only allowing odd values and the value is odd', function() {
@@ -1486,7 +1486,7 @@ test('when only allowing odd values and the value is odd', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 11);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when only allowing odd values and the value is even', function() {
@@ -1495,7 +1495,7 @@ test('when only allowing odd values and the value is even', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when only allowing even values and the value is even', function() {
@@ -1504,7 +1504,7 @@ test('when only allowing even values and the value is even', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when only allowing even values and the value is odd', function() {
@@ -1513,7 +1513,7 @@ test('when only allowing even values and the value is odd', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 11);
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when value refers to another present property', function() {
@@ -1523,12 +1523,12 @@ test('when value refers to another present property', function() {
     model.set('attribute_1', 0);
     model.set('attribute_2', 1);
   });
-  deepEqual(validator.errors, ['failed to be greater']);
+  deepEqual(validator.clientErrors, ['failed to be greater']);
   Ember.run(function() {
     model.set('attribute_1', 2);
     model.set('attribute_2', 1);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when options is true', function() {
@@ -1537,7 +1537,7 @@ test('when options is true', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is not a number']);
+  deepEqual(validator.clientErrors, ['is not a number']);
 });
 
 test('when equal to  and no message is passed', function() {
@@ -1546,7 +1546,7 @@ test('when equal to  and no message is passed', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, ['must be equal to 11']);
+  deepEqual(validator.clientErrors, ['must be equal to 11']);
 });
 
 test('when greater than and no message is passed', function() {
@@ -1555,7 +1555,7 @@ test('when greater than and no message is passed', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, ['must be greater than 11']);
+  deepEqual(validator.clientErrors, ['must be greater than 11']);
 });
 
 test('when greater than or equal to and no message is passed', function() {
@@ -1564,7 +1564,7 @@ test('when greater than or equal to and no message is passed', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, ['must be greater than or equal to 11']);
+  deepEqual(validator.clientErrors, ['must be greater than or equal to 11']);
 });
 
 test('when less than and no message is passed', function() {
@@ -1573,7 +1573,7 @@ test('when less than and no message is passed', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 11);
   });
-  deepEqual(validator.errors, ['must be less than 10']);
+  deepEqual(validator.clientErrors, ['must be less than 10']);
 });
 
 test('when less than or equal to and no message is passed', function() {
@@ -1582,7 +1582,7 @@ test('when less than or equal to and no message is passed', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 11);
   });
-  deepEqual(validator.errors, ['must be less than or equal to 10']);
+  deepEqual(validator.clientErrors, ['must be less than or equal to 10']);
 });
 
 test('when odd and no message is passed', function() {
@@ -1591,7 +1591,7 @@ test('when odd and no message is passed', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 10);
   });
-  deepEqual(validator.errors, ['must be odd']);
+  deepEqual(validator.clientErrors, ['must be odd']);
 });
 
 test('when even and no message is passed', function() {
@@ -1600,7 +1600,7 @@ test('when even and no message is passed', function() {
     validator = Ember.Validations.validators.local.Numericality.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 11);
   });
-  deepEqual(validator.errors, ['must be even']);
+  deepEqual(validator.clientErrors, ['must be even']);
 });
 
 })();
@@ -1623,7 +1623,7 @@ test('when value is not empty', function() {
     validator = Ember.Validations.validators.local.Presence.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'not empty');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is empty', function() {
@@ -1632,7 +1632,7 @@ test('when value is empty', function() {
     validator = Ember.Validations.validators.local.Presence.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is true', function() {
@@ -1641,7 +1641,7 @@ test('when options is true', function() {
     validator = Ember.Validations.validators.local.Presence.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ["can't be blank"]);
+  deepEqual(validator.clientErrors, ["can't be blank"]);
 });
 
 })();
@@ -1651,8 +1651,8 @@ test('when options is true', function() {
   // setup: function() {
     // Ember.Validations.forms['new_user'] = {
       // type: 'ActionView::Helpers::FormBuilder',
-      // input_tag: '<div class="field_with_errors"><span id="input_tag" /><label class="message"></label></div>',
-      // label_tag: '<div class="field_with_errors"><label id="label_tag" /></div>',
+      // input_tag: '<div class="field_with_clientErrors"><span id="input_tag" /><label class="message"></label></div>',
+      // label_tag: '<div class="field_with_clientErrors"><label id="label_tag" /></div>',
       // validators: {'user[email]':{"uniqueness":[{"message": "must be unique", "scope":{'name':"pass"}}]},"presence":[{"message": "must be present"}]}
     // }
 
@@ -1787,8 +1787,8 @@ test('when options is true', function() {
 
   // Ember.Validations.forms['new_user_2'] = {
     // type: 'ActionView::Helpers::FormBuilder',
-    // input_tag: '<div class="field_with_errors"><span id="input_tag" /><label for="user_name" class="message"></label></div>',
-    // label_tag: '<div class="field_with_errors"><label id="label_tag" /></div>',
+    // input_tag: '<div class="field_with_clientErrors"><span id="input_tag" /><label for="user_name" class="message"></label></div>',
+    // label_tag: '<div class="field_with_clientErrors"><label id="label_tag" /></div>',
     // validators: { 'user[email]':{"uniqueness":[{"message": "must be unique"}]}}
   // }
   // $('form#new_user_2').call();

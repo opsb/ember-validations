@@ -18,7 +18,7 @@
   QUnit.config.urlConfig.push('extendprototypes');
 
   // This causes uncaught rejected promises to
-  // cause QUnit errors.
+  // cause QUnit clientErrors.
   ENV.EMBER_LOAD_HOOKS['Ember.Application'] = [function() {
     Ember.RSVP.configure('onerror', function(error) {
       ok(false, Ember.inspect(error));

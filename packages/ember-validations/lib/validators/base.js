@@ -1,6 +1,6 @@
 Ember.Validations.validators.Base = Ember.Object.extend({
   init: function() {
-    this.set('errors', Ember.makeArray());
+    this.set('clientErrors', Ember.makeArray());
     this._dependentValidationKeys = Ember.makeArray();
     this.conditionals = {
       'if': this.get('options.if'),
@@ -29,21 +29,21 @@ Ember.Validations.validators.Base = Ember.Object.extend({
       return model.get(key);
     }
   },
-  isValid: Ember.computed.empty('errors.[]'),
+  isValid: Ember.computed.empty('clientErrors.[]'),
   validate: function() {
     var self = this;
     return this._validate().then(function(success) {
       // Convert validation failures to rejects.
-      var errors = self.get('model.errors');
+      var clientErrors = self.get('model.clientErrors');
       if (success) {
-        return errors;
+        return clientErrors;
       } else {
-        return Ember.RSVP.reject(errors);
+        return Ember.RSVP.reject(clientErrors);
       }
     });
   },
   _validate: function() {
-    this.errors.clear();
+    this.clientErrors.clear();
     if (this.canValidate()) {
       this.call();
     }

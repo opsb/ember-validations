@@ -22,15 +22,15 @@ test('when values match', function() {
     model.set('attribute', 'test');
     model.set('attributeConfirmation', 'test');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
   Ember.run(function() {
     model.set('attributeConfirmation', 'newTest');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
   Ember.run(function() {
     model.set('attribute', 'newTest');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when values do not match', function() {
@@ -39,7 +39,7 @@ test('when values do not match', function() {
     validator = Ember.Validations.validators.local.Confirmation.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'test');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is true', function() {
@@ -48,7 +48,7 @@ test('when options is true', function() {
     validator = Ember.Validations.validators.local.Confirmation.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'test');
   });
-  deepEqual(validator.errors, ["doesn't match attribute"]);
+  deepEqual(validator.clientErrors, ["doesn't match attribute"]);
 });
 
 test('message integration on model, prints message on Confirmation property', function() {
@@ -65,6 +65,6 @@ test('message integration on model, prints message on Confirmation property', fu
     otherModel.set('attribute', 'test');
   });
 
-  deepEqual(otherModel.get('errors.attributeConfirmation'), ["doesn't match attribute"]);
-  deepEqual(otherModel.get('errors.attribute'), []);
+  deepEqual(otherModel.get('clientErrors.attributeConfirmation'), ["doesn't match attribute"]);
+  deepEqual(otherModel.get('clientErrors.attribute'), []);
 });

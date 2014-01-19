@@ -2,8 +2,8 @@
   // setup: function() {
     // Ember.Validations.forms['new_user'] = {
       // type: 'ActionView::Helpers::FormBuilder',
-      // input_tag: '<div class="field_with_errors"><span id="input_tag" /><label class="message"></label></div>',
-      // label_tag: '<div class="field_with_errors"><label id="label_tag" /></div>',
+      // input_tag: '<div class="field_with_clientErrors"><span id="input_tag" /><label class="message"></label></div>',
+      // label_tag: '<div class="field_with_clientErrors"><label id="label_tag" /></div>',
       // validators: {'user[email]':{"uniqueness":[{"message": "must be unique", "scope":{'name':"pass"}}]},"presence":[{"message": "must be present"}]}
     // }
 
@@ -138,8 +138,8 @@
 
   // Ember.Validations.forms['new_user_2'] = {
     // type: 'ActionView::Helpers::FormBuilder',
-    // input_tag: '<div class="field_with_errors"><span id="input_tag" /><label for="user_name" class="message"></label></div>',
-    // label_tag: '<div class="field_with_errors"><label id="label_tag" /></div>',
+    // input_tag: '<div class="field_with_clientErrors"><span id="input_tag" /><label for="user_name" class="message"></label></div>',
+    // label_tag: '<div class="field_with_clientErrors"><label id="label_tag" /></div>',
     // validators: { 'user[email]':{"uniqueness":[{"message": "must be unique"}]}}
   // }
   // $('form#new_user_2').call();

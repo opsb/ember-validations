@@ -47,7 +47,7 @@ Ember.Validations.messages = {
 
 
 (function() {
-Ember.Validations.Errors = Ember.Object.extend({
+Ember.Validations.clientErrors = Ember.Object.extend({
   unknownProperty: function(property) {
     this.set(property, Ember.makeArray());
     return this.get(property);
@@ -96,7 +96,7 @@ var ArrayValidatorProxy = Ember.ArrayProxy.extend(setValidityMixin, {
 Ember.Validations.Mixin = Ember.Mixin.create(setValidityMixin, {
   init: function() {
     this._super();
-    this.errors = Ember.Validations.Errors.create();
+    this.clientErrors = Ember.Validations.clientErrors.create();
     this._dependentValidationKeys = {};
     this.validators = Ember.makeArray();
     if (this.get('validations') === undefined) {
@@ -104,14 +104,14 @@ Ember.Validations.Mixin = Ember.Mixin.create(setValidityMixin, {
     }
     this.buildValidators();
     this.validators.forEach(function(validator) {
-      validator.addObserver('errors.[]', this, function(sender, key, value, context, rev) {
-        var errors = Ember.makeArray();
+      validator.addObserver('clientErrors.[]', this, function(sender, key, value, context, rev) {
+        var clientErrors = Ember.makeArray();
         this.validators.forEach(function(validator) {
           if (validator.property === sender.property) {
-            errors = errors.concat(validator.errors);
+            clientErrors = clientErrors.concat(validator.clientErrors);
           }
         }, this);
-        this.set('errors.' + sender.property, errors);
+        this.set('clientErrors.' + sender.property, clientErrors);
       });
     }, this);
   },
@@ -144,11 +144,11 @@ Ember.Validations.Mixin = Ember.Mixin.create(setValidityMixin, {
   validate: function() {
     var self = this;
     return this._validate().then(function(vals) {
-      var errors = self.get('errors');
+      var clientErrors = self.get('clientErrors');
       if (vals.contains(false)) {
-        return Ember.RSVP.reject(errors);
+        return Ember.RSVP.reject(clientErrors);
       }
-      return errors;
+      return clientErrors;
     });
   },
   _validate: function() {
@@ -183,7 +183,7 @@ Ember.Validations.validators.remote = Ember.Namespace.create();
 (function() {
 Ember.Validations.validators.Base = Ember.Object.extend({
   init: function() {
-    this.set('errors', Ember.makeArray());
+    this.set('clientErrors', Ember.makeArray());
     this._dependentValidationKeys = Ember.makeArray();
     this.conditionals = {
       'if': this.get('options.if'),
@@ -212,21 +212,21 @@ Ember.Validations.validators.Base = Ember.Object.extend({
       return model.get(key);
     }
   },
-  isValid: Ember.computed.empty('errors.[]'),
+  isValid: Ember.computed.empty('clientErrors.[]'),
   validate: function() {
     var self = this;
     return this._validate().then(function(success) {
       // Convert validation failures to rejects.
-      var errors = self.get('model.errors');
+      var clientErrors = self.get('model.clientErrors');
       if (success) {
-        return errors;
+        return clientErrors;
       } else {
-        return Ember.RSVP.reject(errors);
+        return Ember.RSVP.reject(clientErrors);
       }
     });
   },
   _validate: function() {
-    this.errors.clear();
+    this.clientErrors.clear();
     if (this.canValidate()) {
       this.call();
     }
@@ -286,7 +286,7 @@ Ember.Validations.validators.local.Absence = Ember.Validations.validators.Base.e
   },
   call: function() {
     if (!Ember.isEmpty(this.model.get(this.property))) {
-      this.errors.pushObject(this.options.message);
+      this.clientErrors.pushObject(this.options.message);
     }
   }
 });
@@ -311,10 +311,10 @@ Ember.Validations.validators.local.Acceptance = Ember.Validations.validators.Bas
   call: function() {
     if (this.options.accept) {
       if (this.model.get(this.property) !== this.options.accept) {
-        this.errors.pushObject(this.options.message);
+        this.clientErrors.pushObject(this.options.message);
       }
     } else if (this.model.get(this.property) !== '1' && this.model.get(this.property) !== 1 && this.model.get(this.property) !== true) {
-      this.errors.pushObject(this.options.message);
+      this.clientErrors.pushObject(this.options.message);
     }
   }
 });
@@ -338,7 +338,7 @@ Ember.Validations.validators.local.Confirmation = Ember.Validations.validators.B
   },
   call: function() {
     if (this.model.get(this.originalProperty) !== this.model.get(this.property)) {
-      this.errors.pushObject(this.options.message);
+      this.clientErrors.pushObject(this.options.message);
     }
   }
 });
@@ -365,18 +365,18 @@ Ember.Validations.validators.local.Exclusion = Ember.Validations.validators.Base
 
     if (Ember.isEmpty(this.model.get(this.property))) {
       if (this.options.allowBlank === undefined) {
-        this.errors.pushObject(this.options.message);
+        this.clientErrors.pushObject(this.options.message);
       }
     } else if (this.options['in']) {
       if (Ember.$.inArray(this.model.get(this.property), this.options['in']) !== -1) {
-        this.errors.pushObject(this.options.message);
+        this.clientErrors.pushObject(this.options.message);
       }
     } else if (this.options.range) {
       lower = this.options.range[0];
       upper = this.options.range[1];
 
       if (this.model.get(this.property) >= lower && this.model.get(this.property) <= upper) {
-        this.errors.pushObject(this.options.message);
+        this.clientErrors.pushObject(this.options.message);
       }
     }
   }
@@ -401,12 +401,12 @@ Ember.Validations.validators.local.Format = Ember.Validations.validators.Base.ex
    call: function() {
     if (Ember.isEmpty(this.model.get(this.property))) {
       if (this.options.allowBlank === undefined) {
-        this.errors.pushObject(this.options.message);
+        this.clientErrors.pushObject(this.options.message);
       }
     } else if (this.options['with'] && !this.options['with'].test(this.model.get(this.property))) {
-      this.errors.pushObject(this.options.message);
+      this.clientErrors.pushObject(this.options.message);
     } else if (this.options.without && this.options.without.test(this.model.get(this.property))) {
-      this.errors.pushObject(this.options.message);
+      this.clientErrors.pushObject(this.options.message);
     }
   }
 });
@@ -431,18 +431,18 @@ Ember.Validations.validators.local.Inclusion = Ember.Validations.validators.Base
     var message, lower, upper;
     if (Ember.isEmpty(this.model.get(this.property))) {
       if (this.options.allowBlank === undefined) {
-        this.errors.pushObject(this.options.message);
+        this.clientErrors.pushObject(this.options.message);
       }
     } else if (this.options['in']) {
       if (Ember.$.inArray(this.model.get(this.property), this.options['in']) === -1) {
-        this.errors.pushObject(this.options.message);
+        this.clientErrors.pushObject(this.options.message);
       }
     } else if (this.options.range) {
       lower = this.options.range[0];
       upper = this.options.range[1];
 
       if (this.model.get(this.property) < lower || this.model.get(this.property) > upper) {
-        this.errors.pushObject(this.options.message);
+        this.clientErrors.pushObject(this.options.message);
       }
     }
   }
@@ -518,7 +518,7 @@ Ember.Validations.validators.local.Length = Ember.Validations.validators.Base.ex
 
     if (Ember.isEmpty(this.model.get(this.property))) {
       if (this.options.allowBlank === undefined && (this.options.is || this.options.minimum)) {
-        this.errors.pushObject(this.renderBlankMessage());
+        this.clientErrors.pushObject(this.renderBlankMessage());
       }
     } else {
       for (key in this.CHECKS) {
@@ -529,7 +529,7 @@ Ember.Validations.validators.local.Length = Ember.Validations.validators.Base.ex
 
         fn = new Function('return ' + this.tokenizedLength(this.model.get(this.property)) + ' ' + operator + ' ' + this.getValue(key));
         if (!fn()) {
-          this.errors.pushObject(this.renderMessageFor(key));
+          this.clientErrors.pushObject(this.renderMessageFor(key));
         }
       }
     }
@@ -594,16 +594,16 @@ Ember.Validations.validators.local.Numericality = Ember.Validations.validators.B
 
     if (Ember.isEmpty(this.model.get(this.property))) {
       if (this.options.allowBlank === undefined) {
-        this.errors.pushObject(this.options.messages.numericality);
+        this.clientErrors.pushObject(this.options.messages.numericality);
       }
     } else if (!Ember.Validations.patterns.numericality.test(this.model.get(this.property))) {
-      this.errors.pushObject(this.options.messages.numericality);
+      this.clientErrors.pushObject(this.options.messages.numericality);
     } else if (this.options.onlyInteger === true && !(/^[+\-]?\d+$/.test(this.model.get(this.property)))) {
-      this.errors.pushObject(this.options.messages.onlyInteger);
+      this.clientErrors.pushObject(this.options.messages.onlyInteger);
     } else if (this.options.odd  && parseInt(this.model.get(this.property), 10) % 2 === 0) {
-      this.errors.pushObject(this.options.messages.odd);
+      this.clientErrors.pushObject(this.options.messages.odd);
     } else if (this.options.even && parseInt(this.model.get(this.property), 10) % 2 !== 0) {
-      this.errors.pushObject(this.options.messages.even);
+      this.clientErrors.pushObject(this.options.messages.even);
     } else {
       for (check in this.CHECKS) {
         operator = this.CHECKS[check];
@@ -621,7 +621,7 @@ Ember.Validations.validators.local.Numericality = Ember.Validations.validators.B
         fn = new Function('return ' + this.model.get(this.property) + ' ' + operator + ' ' + checkValue);
 
         if (!fn()) {
-          this.errors.pushObject(this.options.messages[check]);
+          this.clientErrors.pushObject(this.options.messages[check]);
         }
       }
     }
@@ -647,7 +647,7 @@ Ember.Validations.validators.local.Presence = Ember.Validations.validators.Base.
   },
   call: function() {
     if (Ember.isEmpty(this.model.get(this.property))) {
-      this.errors.pushObject(this.options.message);
+      this.clientErrors.pushObject(this.options.message);
     }
   }
 });

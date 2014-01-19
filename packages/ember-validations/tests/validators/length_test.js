@@ -21,7 +21,7 @@ test('when allowed length is 3 and value length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '123');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowed length is 3 and value length is 4', function() {
@@ -30,7 +30,7 @@ test('when allowed length is 3 and value length is 4', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '1234');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowed length is 3 and value length is 2', function() {
@@ -39,7 +39,7 @@ test('when allowed length is 3 and value length is 2', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '12');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowing blank and allowed length is 3', function() {
@@ -48,7 +48,7 @@ test('when allowing blank and allowed length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowing blank and minimum length is 3 and maximum length is 100', function() {
@@ -57,7 +57,7 @@ test('when allowing blank and minimum length is 3 and maximum length is 100', fu
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when not allowing blank and allowed length is 3', function() {
@@ -66,7 +66,7 @@ test('when not allowing blank and allowed length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowed length is 3 and a differnet tokenizer', function() {
@@ -75,7 +75,7 @@ test('when allowed length is 3 and a differnet tokenizer', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'one two three');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowed length minimum is 3 and value length is 3', function() {
@@ -84,7 +84,7 @@ test('when allowed length minimum is 3 and value length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '123');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowed length minimum is 3 and value length is 2', function() {
@@ -93,7 +93,7 @@ test('when allowed length minimum is 3 and value length is 2', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '12');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowed length maximum is 3 and value length is 3', function() {
@@ -102,7 +102,7 @@ test('when allowed length maximum is 3 and value length is 3', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '123');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when allowed length maximum is 3 and value length is 4', function() {
@@ -111,7 +111,7 @@ test('when allowed length maximum is 3 and value length is 4', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '1234');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowed length maximum is 3 and value is blank', function() {
@@ -120,7 +120,7 @@ test('when allowed length maximum is 3 and value is blank', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when options is a number', function() {
@@ -130,7 +130,7 @@ test('when options is a number', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 3 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 3 characters)']);
 });
 
 test('when options is a number and value is undefined', function() {
@@ -139,7 +139,7 @@ test('when options is a number and value is undefined', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 3 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 3 characters)']);
 });
 
 test('when allowed length is 3, value length is 4 and no message is set', function() {
@@ -148,7 +148,7 @@ test('when allowed length is 3, value length is 4 and no message is set', functi
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '1234');
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 3 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 3 characters)']);
 });
 
 test('when allowed length minimum is 3, value length is 2 and no message is set', function() {
@@ -157,7 +157,7 @@ test('when allowed length minimum is 3, value length is 2 and no message is set'
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '12');
   });
-  deepEqual(validator.errors, ['is too short (minimum is 3 characters)']);
+  deepEqual(validator.clientErrors, ['is too short (minimum is 3 characters)']);
 });
 
 test('when allowed length maximum is 3, value length is 4 and no message is set', function() {
@@ -166,7 +166,7 @@ test('when allowed length maximum is 3, value length is 4 and no message is set'
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '1234');
   });
-  deepEqual(validator.errors, ['is too long (maximum is 3 characters)']);
+  deepEqual(validator.clientErrors, ['is too long (maximum is 3 characters)']);
 });
 
 test('when using a property instead of a number', function() {
@@ -175,13 +175,13 @@ test('when using a property instead of a number', function() {
     validator = Ember.Validations.validators.local.Length.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '123');
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 0 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 0 characters)']);
   Ember.run(function() {
     model.set('countProperty', 3);
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
   Ember.run(function() {
     model.set('countProperty', 5);
   });
-  deepEqual(validator.errors, ['is the wrong length (should be 5 characters)']);
+  deepEqual(validator.clientErrors, ['is the wrong length (should be 5 characters)']);
 });

@@ -15,7 +15,7 @@ test('when value is not empty', function() {
     validator = Ember.Validations.validators.local.Presence.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'not empty');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when value is empty', function() {
@@ -24,7 +24,7 @@ test('when value is empty', function() {
     validator = Ember.Validations.validators.local.Presence.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is true', function() {
@@ -33,5 +33,5 @@ test('when options is true', function() {
     validator = Ember.Validations.validators.local.Presence.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ["can't be blank"]);
+  deepEqual(validator.clientErrors, ["can't be blank"]);
 });

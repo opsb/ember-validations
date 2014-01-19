@@ -21,7 +21,7 @@ test('when matching format', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute',  '123');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when not matching format', function() {
@@ -30,7 +30,7 @@ test('when not matching format', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', 'abc');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when allowing blank', function() {
@@ -39,7 +39,7 @@ test('when allowing blank', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, []);
+  deepEqual(validator.clientErrors, []);
 });
 
 test('when not allowing blank', function() {
@@ -48,7 +48,7 @@ test('when not allowing blank', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['failed validation']);
+  deepEqual(validator.clientErrors, ['failed validation']);
 });
 
 test('when options is regexp', function() {
@@ -57,7 +57,7 @@ test('when options is regexp', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is invalid']);
+  deepEqual(validator.clientErrors, ['is invalid']);
 });
 
 test('when no message is passed', function() {
@@ -66,5 +66,5 @@ test('when no message is passed', function() {
     validator = Ember.Validations.validators.local.Format.create({model: model, property: 'attribute', options: options});
     model.set('attribute', '');
   });
-  deepEqual(validator.errors, ['is invalid']);
+  deepEqual(validator.clientErrors, ['is invalid']);
 });
